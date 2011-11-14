@@ -1,0 +1,18 @@
+body {
+   font-family: sans-serif;
+   size: 12px;
+   background: #fffeee;
+}
+
+#results {
+   margin-left: auto;
+   margin-right: auto;
+   width: 200px;
+   background: lightblue;
+   border: gray 1px solid;
+   border-radius: 6px;
+}
+
+#results thead {
+   font-weight: bold;
+}
