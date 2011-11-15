@@ -4,10 +4,14 @@ body {
    background: #fffeee;
 }
 
-#results {
+.container {
    margin-left: auto;
    margin-right: auto;
-   width: 200px;
+   width: 300px;
+}
+
+#results {
+   width: 100%;
    background: lightblue;
    border: gray 1px solid;
    border-radius: 6px;
