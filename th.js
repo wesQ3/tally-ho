@@ -14,15 +14,20 @@ var keyHandler = function(event) {
 };
 
 var refreshTable = function () {
+   if (_(keys).keys().length == 0) return;
    var total = _(keys).chain().values()
       .map(function(o) { return o.count })
       .reduce(function(a,b) { return a + b }).value();
    var rows = _(keys).chain().keys()
       .sortBy(function(char) { return -keys[char].count })
-      .map(function(char) { return makeRow({ 
-         key: char, char: keys[char].alias, val: keys[char].count, 
-         per: ( 100*( keys[char].count )/total ).toFixed(2) 
-      })})
+      .map(function(char) {
+         var percent = ( 100*( keys[char].count )/total ).toFixed(2);
+         return makeRow({
+            key: char, char: keys[char].alias,
+            val: keys[char].count,
+            per: isNaN( percent ) ? '?' : percent
+         })
+      })
       .value().join('');
 
    var totalRow = makeTotalRow({ val: total });
@@ -31,6 +36,7 @@ var refreshTable = function () {
 };
 
 var renameKeys = function() {
+   if (_(keys).keys().length == 0) return;
    $(document).off('keypress');
    $('td.alias').each(function() {
       var text = $(this).text();
@@ -46,12 +52,19 @@ var stopRename = function() {
       keys[$(this).parents('tr').attr('id')].alias = text; 
    });
 
+   var freeze = {};
+   _(keys).each(function(val,key) {freeze[key] = val.alias;})
+   localStorage.keys = JSON.stringify(freeze);
+
    refreshTable();
    $('#rename').text('Rename Tallies').off('click').click(renameKeys);
    $(document).keypress(keyHandler);
 };
 
-var resetKeys = function() {
+var resetCounts = function() { _(keys).each(function(key) { key.count = 0; }); };
+
+var clearStorage = function() {
+   delete localStorage.keys;
    keys = {}; 
    $('#results > tbody').empty()
       .append('<tr><td>Start typing keys to begin tallying...</td></tr>');
@@ -59,6 +72,12 @@ var resetKeys = function() {
 
 $(document).ready(function() {
    $(document).keypress(keyHandler);
-   $('#reset').click(resetKeys);
+   $('#reset').click(function() { resetCounts(); refreshTable(); });
    $('#rename').click(renameKeys);
+   $('#clear').click(clearStorage);
+   if (localStorage.keys) {
+      var thaw = JSON.parse(localStorage.keys);
+      _(thaw).each(function(val,key) { keys[key] = { alias: val, count: 0 }; });
+      refreshTable();
+   }
 });
