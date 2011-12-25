@@ -1,4 +1,4 @@
-var keys = {}, per;
+var keys = {}, per, userPref = {};
 var makeRow = 
    _.template('<tr id="<%= key %>"><td class="key"><%= key %></td><td class="alias"><%= char %></td>\
       <td class="counter"><%= val %></td><td><%= per %></td></tr>');
@@ -18,9 +18,12 @@ var refreshTable = function () {
    var total = _(keys).chain().values()
       .map(function(o) { return o.count })
       .reduce(function(a,b) { return a + b }).value();
-   var rows = _(keys).chain().keys()
-      .sortBy(function(char) { return -keys[char].count })
-      .map(function(char) {
+   var rows = _(keys).chain().keys();
+
+   if (userPref.doSort)
+      rows = rows.sortBy(function(char) { return -keys[char].count })
+
+   rows = rows.map(function(char) {
          var percent = ( 100*( keys[char].count )/total ).toFixed(2);
          return makeRow({
             key: char, char: keys[char].alias,
@@ -29,7 +32,6 @@ var refreshTable = function () {
          })
       })
       .value().join('');
-
    var totalRow = makeTotalRow({ val: total });
 
    $('#results > tbody').empty().append(rows + totalRow);
