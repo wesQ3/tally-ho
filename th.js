@@ -1,9 +1,9 @@
 var keys = {}, per;
 var makeRow = 
-   _.template('<tr id="<%= key %>"><td class="alias"><%= char %></td>\
+   _.template('<tr id="<%= key %>"><td class="key"><%= key %></td><td class="alias"><%= char %></td>\
       <td class="counter"><%= val %></td><td><%= per %></td></tr>');
 var makeTotalRow = 
-   _.template('<tr id="total"><td>Total</td><td class="counter"><%= val %></td><td>100</td></tr>');
+   _.template('<tr id="total"><td></td><td>Total</td><td class="counter"><%= val %></td><td>100</td></tr>');
 
 var keyHandler = function(event) {
    var char = String.fromCharCode(event.which);
